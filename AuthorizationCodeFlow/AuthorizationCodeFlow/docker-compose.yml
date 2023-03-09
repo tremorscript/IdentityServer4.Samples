@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2019-latest 
+
+  service.api:
+    image: ${DOCKER_REGISTRY-}serviceapi
+    build:
+      context: .
+      dockerfile: Service.Api/Dockerfile
+    depends_on:
+      - sqldata
+
+  identityserver4.sts:
+    image: ${DOCKER_REGISTRY-}identityserver4sts
+    build:
+      context: .
+      dockerfile: IdentityServer4.Sts/Dockerfile
+    depends_on:
+      - sqldata
+
