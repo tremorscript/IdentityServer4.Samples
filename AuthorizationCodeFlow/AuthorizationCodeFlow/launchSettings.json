@@ -5,7 +5,8 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "service.api": "StartDebugging",
-        "identityserver4.sts": "StartDebugging"
+        "mvc.client.webapp": "StartDebugging",
+        "aspnetidentity.sts": "StartDebugging"
       }
     }
   }

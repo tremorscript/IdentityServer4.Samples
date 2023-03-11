@@ -1,4 +1,6 @@
 
+using System.IdentityModel.Tokens.Jwt;
+
 namespace Service.Api;
 
 public class Program
@@ -8,10 +10,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        ConfigureServices(builder);
 
         var app = builder.Build();
 
@@ -23,12 +22,39 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-
+        app.UseAuthentication();
         app.UseAuthorization();
-
-
         app.MapControllers();
-
         app.Run();
+
+        static void ConfigureServices(WebApplicationBuilder builder)
+        {
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            ConfigureAuthService(builder);
+        }
+
+        static void ConfigureAuthService(WebApplicationBuilder builder)
+        {
+            // prevent from mapping "sub" claim to nameidentifier.
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
+
+            builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
+            {
+                options.Authority = builder.Configuration["IdentityUrl"];
+                options.RequireHttpsMetadata = false;
+                options.Audience = "serviceapi";
+                options.TokenValidationParameters.ValidateAudience = false;
+            });
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ApiScope", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "serviceapi");
+                });
+            });
+        }
     }
 }

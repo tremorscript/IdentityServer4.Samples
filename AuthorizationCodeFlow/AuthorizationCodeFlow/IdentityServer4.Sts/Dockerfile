@@ -7,16 +7,21 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
+
+COPY ["AuthorizationCodeFlow.sln", "AuthorizationCodeFlow.sln"]
 COPY ["IdentityServer4.Sts/IdentityServer4.Sts.csproj", "IdentityServer4.Sts/"]
-RUN dotnet restore "IdentityServer4.Sts/IdentityServer4.Sts.csproj"
+COPY ["Service.Api/Service.Api.csproj", "Service.Api/"]
+COPY ["Mvc.Client.WebApp/Mvc.Client.WebApp.csproj", "Mvc.Client.WebApp/"]
+COPY "docker-compose.dcproj" "docker-compose.dcproj"
+RUN dotnet restore "AuthorizationCodeFlow.sln"
+
 COPY . .
 WORKDIR "/src/IdentityServer4.Sts"
-RUN dotnet build "IdentityServer4.Sts.csproj" -c Release -o /app/build
+RUN dotnet publish --no-restore -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "IdentityServer4.Sts.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "IdentityServer4.Sts.dll"]

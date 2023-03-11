@@ -43,7 +43,7 @@ namespace IdentityServer4.Sts
             if (!context.Clients.Any())
             {
                 Log.Debug("Clients being populated");
-                foreach (var client in Config.Clients.ToList())
+                foreach (var client in Config.GetClients.ToList())
                 {
                     context.Clients.Add(client.ToEntity());
                 }

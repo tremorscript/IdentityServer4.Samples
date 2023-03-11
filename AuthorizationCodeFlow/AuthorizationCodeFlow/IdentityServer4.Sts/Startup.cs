@@ -28,7 +28,7 @@ namespace IdentityServer4.Sts
         {
             services.AddControllersWithViews();
 
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = Configuration["ConnectionString"];
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -44,12 +44,12 @@ namespace IdentityServer4.Sts
                 // this adds the config data from DB (clients, resources, CORS)
                 .AddConfigurationStore(options =>
                 {
-                    options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString);
+                    options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(typeof(Startup).Assembly.FullName));
                 })
                 // this adds the operational data from DB (codes, tokens, consents)
                 .AddOperationalStore(options =>
                 {
-                    options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString);
+                    options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(typeof(Startup).Assembly.FullName));
 
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
@@ -76,7 +76,6 @@ namespace IdentityServer4.Sts
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
 
             app.UseStaticFiles();

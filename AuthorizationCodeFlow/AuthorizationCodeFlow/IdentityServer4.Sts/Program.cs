@@ -43,13 +43,15 @@ namespace IdentityServer4.Sts
                     args = args.Except(new[] { "/seed" }).ToArray();
                 }
 
+                seed = true;
+
                 var host = CreateHostBuilder(args).Build();
 
                 if (seed)
                 {
                     Log.Information("Seeding database...");
                     var config = host.Services.GetRequiredService<IConfiguration>();
-                    var connectionString = config.GetConnectionString("DefaultConnection");
+                    var connectionString = config["ConnectionString"];
                     SeedData.EnsureSeedData(connectionString);
                     Log.Information("Done seeding database.");
                     return 0;

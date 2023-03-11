@@ -13,11 +13,17 @@ services:
     depends_on:
       - sqldata
 
-  identityserver4.sts:
-    image: ${DOCKER_REGISTRY-}identityserver4sts
+  mvc.client.webapp:
+    image: ${DOCKER_REGISTRY-}mvcclientwebapp
     build:
       context: .
-      dockerfile: IdentityServer4.Sts/Dockerfile
+      dockerfile: Mvc.Client.WebApp/Dockerfile
+
+
+  aspnetidentity.sts:
+    image: ${DOCKER_REGISTRY-}aspnetidentitysts
+    build:
+      context: .
+      dockerfile: AspNetIdentity.Sts/Dockerfile
     depends_on:
       - sqldata
-
