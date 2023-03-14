@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+
+  sqldata:
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"
+    volumes:
+      - identity-sqldata:/var/opt/mssql
+
+  #blazorwasmapp1:
+  #  environment:
+  #    - ASPNETCORE_ENVIRONMENT=Development
+  #    - ASPNETCORE_URLS=http://0.0.0.0:80
+  #    - IdentityUrl=http://host.docker.internal:5001
+  #  ports:
+  #    - "5006:80"
+  #  volumes:
+  #    - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  aspnetidentity.sts:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DefaultConnection=Server=sqldata;Database=AspNetIdentity.db;User Id=sa;Password=Pass@word;Encrypt=False;TrustServerCertificate=true
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - BlazorWasmClient=http://localhost:5006
+    ports:
+      - "5001:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  service.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - IdentityUrl=http://host.docker.internal:5001
+    ports:
+      - "5183:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+
+volumes:
+  identity-sqldata:
+    external: false

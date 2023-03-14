@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "blazorwasmapp": "StartDebugging",
+        "service.api": "StartDebugging",
+        "blazorwasmapp1": "StartDebugging"
+      }
+    }
+  }
+}

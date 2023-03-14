@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  aspnetidentity.sts:
+    image: ${DOCKER_REGISTRY-}aspnetidentitysts
+    build:
+      context: .
+      dockerfile: AspNetIdentity.Sts/Dockerfile
+    depends_on:
+    - sqldata
+
+  service.api:
+    image: ${DOCKER_REGISTRY-}serviceapi
+    build:
+      context: .
+      dockerfile: Service.Api/Dockerfile
+
+
+  #blazorwasmapp1:
+  #  image: ${DOCKER_REGISTRY-}blazorwasmapp1
+  #  build:
+  #    context: .
+  #    dockerfile: BlazorWasmApp1/Dockerfile
+
